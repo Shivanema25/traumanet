@@ -11,6 +11,7 @@ import {
   ArrowRight,
   ArrowLeft,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import DocumentAIScanner from "@/components/DocumentAIScanner";
 import UpiPaymentModal from "@/components/UpiPaymentModal";
@@ -160,6 +161,29 @@ export default function FamilyPortalPage() {
                 </div>
               </div>
             </div>
+
+            {/* Clinical Handover Summary for Family */}
+            {(activeSession.sbar || activeSession.ai_pre_report) && (
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-sm space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-emerald-400" />
+                    <h3 className="text-sm font-bold text-white">Emergency Clinical Assessment</h3>
+                  </div>
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-red-500/15 text-red-300 font-bold uppercase">
+                    {activeSession.urgency || activeSession.severity}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-200 leading-relaxed font-sans">
+                  {activeSession.sbar?.situation || activeSession.ai_pre_report}
+                </p>
+                {activeSession.sbar?.recommendation && (
+                  <p className="text-xs text-emerald-300/90 bg-emerald-950/30 p-3 rounded-xl border border-emerald-500/20">
+                    <strong>ER Readiness:</strong> {activeSession.sbar.recommendation}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Document AI Simulator */}
             <DocumentAIScanner

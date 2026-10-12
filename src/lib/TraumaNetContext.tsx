@@ -93,45 +93,7 @@ export function TraumaNetProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Live ambulance movement simulation timer
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setState((prev) => {
-        let changed = false;
-        const updatedSessions = prev.sessions.map((session) => {
-          if (session.eta_minutes > 1 && session.bed_status !== "ADMITTED") {
-            changed = true;
-            // Minor coordinate drift towards assigned hospital
-            const hospital = prev.hospitals.find((h) => h.hospital_id === session.assigned_hospital_id);
-            let nextLat = session.ambulance_lat;
-            let nextLng = session.ambulance_lng;
-            if (hospital) {
-              const deltaLat = (hospital.lat - session.ambulance_lat) * 0.05;
-              const deltaLng = (hospital.lng - session.ambulance_lng) * 0.05;
-              nextLat += deltaLat;
-              nextLng += deltaLng;
-            }
-            return {
-              ...session,
-              ambulance_lat: nextLat,
-              ambulance_lng: nextLng,
-              eta_minutes: Math.max(1, Math.round((session.eta_minutes - 0.1) * 10) / 10),
-            };
-          }
-          return session;
-        });
 
-        if (changed) {
-          const nextState = { ...prev, sessions: updatedSessions };
-          saveState(nextState);
-          return nextState;
-        }
-        return prev;
-      });
-    }, 15000); // update every 15s
-
-    return () => clearInterval(interval);
-  }, []);
 
   const activeSession =
     state.sessions.find((s) => s.session_id === state.activeSessionId) ||

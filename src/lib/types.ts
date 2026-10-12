@@ -72,6 +72,13 @@ export interface CostBreakdown {
   final_patient_deposit_inr: number;
 }
 
+export interface SbarReport {
+  situation: string;
+  background: string;
+  assessment: string;
+  recommendation: string;
+}
+
 export interface EmergencySession {
   session_id: string;
   incident_title: string;
@@ -80,6 +87,8 @@ export interface EmergencySession {
   vitals: PatientVitals;
   trauma_score: number; // 1.0 - 10.0
   severity: SeverityLevel;
+  urgency?: SeverityLevel;
+  sbar?: SbarReport;
   ai_pre_report: string; // 2-sentence clinical summary
   required_specialists: string[];
   stabilization_steps: string[];
@@ -96,6 +105,7 @@ export interface EmergencySession {
   pre_reservations: PreReservations;
   injury_image_url?: string;
   voice_notes?: string;
+  raw_paramedic_notes?: string;
   cost_breakdown?: CostBreakdown;
   upi_ref_id?: string;
   rerouted_to_hospital_id?: string;
@@ -104,7 +114,9 @@ export interface EmergencySession {
 
 export interface GeminiTriageResponse {
   trauma_score: number; // 1.0 - 10.0
+  urgency?: SeverityLevel;
   severity: SeverityLevel;
+  sbar?: SbarReport;
   required_specialists: string[];
   ai_pre_report: string;
   stabilization_steps: string[];

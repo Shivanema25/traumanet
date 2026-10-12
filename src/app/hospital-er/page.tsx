@@ -237,39 +237,121 @@ export default function HospitalErPage() {
         )}
 
         {/* =========================================================================
-            TAB 2: VITALS STREAM & MEDICAL PRE-REPORT
+            TAB 2: VITALS STREAM & MEDICAL SBAR PRE-REPORT
         ========================================================================= */}
         {activeTab === "vitals" && (
           <div className="space-y-6 animate-in fade-in duration-200">
+            {/* Real Patient Vitals */}
             <VitalsMonitor vitals={activeSession.vitals} />
 
-            {/* Gemini Pre-Report Card */}
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            {/* Multimodal Injury Photo & Notes if available */}
+            {(activeSession.injury_image_url || activeSession.voice_notes || activeSession.raw_paramedic_notes) && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900 border border-slate-800 rounded-3xl p-6">
+                {activeSession.injury_image_url && (
+                  <div className="space-y-2">
+                    <span className="text-xs font-bold text-slate-300 block">
+                      Paramedic Injury Vision Photo:
+                    </span>
+                    <div className="rounded-2xl overflow-hidden border border-slate-700 bg-slate-950 max-h-48 flex items-center justify-center">
+                      <img
+                        src={activeSession.injury_image_url}
+                        alt="Injury Wound"
+                        className="w-full h-44 object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className={`${activeSession.injury_image_url ? "md:col-span-2" : "md:col-span-3"} space-y-2`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-300">
+                      Paramedic Field Notes (Regional / English):
+                    </span>
+                    <span className="text-[11px] font-mono text-emerald-400">
+                      Live Transit Dictation
+                    </span>
+                  </div>
+                  <div className="p-4 bg-slate-950 border border-slate-800 rounded-2xl text-xs text-slate-200 leading-relaxed font-sans">
+                    {activeSession.raw_paramedic_notes || activeSession.voice_notes || "No additional audio notes recorded."}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Gemini SBAR Report Card */}
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-emerald-400" />
-                  <h3 className="text-base font-bold text-white">Gemini 1.5 Clinical Summary</h3>
+                  <div>
+                    <h3 className="text-base font-bold text-white">Gemini 1.5 SBAR Clinical Handover</h3>
+                    <p className="text-xs text-slate-400">Standardized Trauma Handover Protocol (Situation, Background, Assessment, Recommendation)</p>
+                  </div>
                 </div>
-                <span className="text-sm font-mono font-bold px-3 py-1 rounded-full bg-red-500/15 text-red-300">
-                  Score: {activeSession.trauma_score} / 10 ({activeSession.severity})
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase px-3 py-1 rounded-xl bg-red-500/20 text-red-300 border border-red-500/40">
+                    {activeSession.urgency || activeSession.severity} Acuity
+                  </span>
+                  <span className="text-sm font-mono font-bold px-3 py-1 rounded-xl bg-slate-950 border border-slate-800 text-white">
+                    Score: <span className="text-red-400">{activeSession.trauma_score}</span> / 10
+                  </span>
+                </div>
               </div>
 
-              <p className="p-4 bg-slate-950 rounded-2xl border border-slate-800 text-sm text-slate-200 leading-relaxed font-sans">
-                {activeSession.ai_pre_report}
-              </p>
+              {/* SBAR 4-Block Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-1.5">
+                  <span className="text-xs font-bold uppercase text-rose-400 flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-md bg-rose-500/20 flex items-center justify-center text-[10px]">S</span>
+                    Situation
+                  </span>
+                  <p className="text-xs text-slate-200 leading-relaxed">
+                    {activeSession.sbar?.situation || activeSession.ai_pre_report.split(".")[0] + "."}
+                  </p>
+                </div>
+
+                <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-1.5">
+                  <span className="text-xs font-bold uppercase text-amber-400 flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-md bg-amber-500/20 flex items-center justify-center text-[10px]">B</span>
+                    Background
+                  </span>
+                  <p className="text-xs text-slate-200 leading-relaxed">
+                    {activeSession.sbar?.background || activeSession.voice_notes || "En-route trauma assessment post high-velocity impact."}
+                  </p>
+                </div>
+
+                <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-1.5">
+                  <span className="text-xs font-bold uppercase text-blue-400 flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-md bg-blue-500/20 flex items-center justify-center text-[10px]">A</span>
+                    Assessment
+                  </span>
+                  <p className="text-xs text-slate-200 leading-relaxed">
+                    {activeSession.sbar?.assessment || activeSession.ai_pre_report}
+                  </p>
+                </div>
+
+                <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-1.5">
+                  <span className="text-xs font-bold uppercase text-emerald-400 flex items-center gap-1.5">
+                    <span className="w-5 h-5 rounded-md bg-emerald-500/20 flex items-center justify-center text-[10px]">R</span>
+                    Recommendation
+                  </span>
+                  <p className="text-xs text-slate-200 leading-relaxed">
+                    {activeSession.sbar?.recommendation || "Standby Level 1 trauma resuscitation bay, prepare blood bank PRBC units and Pan-Scan CT."}
+                  </p>
+                </div>
+              </div>
 
               <div>
                 <span className="text-xs font-bold text-slate-300 block mb-3">
-                  Required Sub-Specialties On Arrival:
+                  Required Sub-Specialties Mobilized On Arrival:
                 </span>
                 <div className="flex flex-wrap gap-2.5">
                   {activeSession.required_specialists.map((spec, i) => (
                     <span
                       key={i}
-                      className="text-xs sm:text-sm px-4 py-1.5 rounded-xl bg-blue-950/60 border border-blue-500/30 text-blue-300 font-semibold"
+                      className="text-xs px-3.5 py-1.5 rounded-xl bg-blue-950/60 border border-blue-500/30 text-blue-300 font-semibold flex items-center gap-1.5"
                     >
-                      {spec}
+                      🩺 {spec}
                     </span>
                   ))}
                 </div>
