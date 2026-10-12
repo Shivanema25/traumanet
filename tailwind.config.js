@@ -4,16 +4,40 @@ module.exports = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       fontFamily: {
         sans: ["var(--font-inter)", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
       },
       colors: {
         background: "#0F172A",
         surface: "#1E293B",
         "surface-raised": "#334155",
+        emergency: {
+          DEFAULT: "#EF4444",
+          light: "#F87171",
+          dark: "#B91C1C",
+          glow: "rgba(239, 68, 68, 0.35)",
+        },
+        success: {
+          DEFAULT: "#10B981",
+          light: "#34D399",
+          dark: "#047857",
+        },
+        electric: {
+          DEFAULT: "#3B82F6",
+          light: "#60A5FA",
+          dark: "#1D4ED8",
+        },
+        warning: {
+          DEFAULT: "#F59E0B",
+          light: "#FBBF24",
+          dark: "#B45309",
+        },
         "emergency-red": {
           DEFAULT: "#EF4444",
           light: "#F87171",
