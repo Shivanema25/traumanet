@@ -279,11 +279,10 @@ export function TraumaNetProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const resetAllData = useCallback(() => {
-    const initialSession = createDemoSessionFromPreset(DEMO_SCENARIOS[0], "session-demo-01");
     const freshState: TraumaNetState = {
       hospitals: INITIAL_HOSPITALS,
-      sessions: [initialSession],
-      activeSessionId: initialSession.session_id,
+      sessions: [],
+      activeSessionId: null,
       offlineQueue: [],
       isOnline: true,
       useLiveGemini: false,

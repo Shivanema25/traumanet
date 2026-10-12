@@ -41,12 +41,11 @@ export function getInitialState(): TraumaNetState {
     console.debug("Failed reading state from localStorage:", e);
   }
 
-  // First time initialization
-  const initialSession = createDemoSessionFromPreset(DEMO_SCENARIOS[0], "session-demo-01");
+  // First time initialization starts completely clean (no fake ticker or auto-generated session)
   const state: TraumaNetState = {
     hospitals: INITIAL_HOSPITALS,
-    sessions: [initialSession],
-    activeSessionId: initialSession.session_id,
+    sessions: [],
+    activeSessionId: null,
     offlineQueue: [],
     isOnline: navigator.onLine !== false,
     useLiveGemini: false,

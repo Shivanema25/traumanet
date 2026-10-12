@@ -1,3 +1,11 @@
+export interface HospitalRankingV2 {
+  dependability_score: number; // e.g. 94.2
+  ranking_grade: string; // e.g. "Grade A+"
+  communication_freshness_sec: number; // e.g. 14
+  equipment_readiness_pct: number; // e.g. 98.5
+  icu_hold_reliability_pct: number; // e.g. 96.0
+}
+
 export interface Hospital {
   hospital_id: string;
   name: string;
@@ -17,6 +25,25 @@ export interface Hospital {
   emergency_contact: string;
   blood_bank_o_neg_units: number;
   ct_mri_available: boolean;
+  ranking_v2?: HospitalRankingV2;
+}
+
+export interface BillGuardAuditItem {
+  item_name: string;
+  billed_amount_inr: number;
+  cghs_cap_inr: number;
+  is_overcharged: boolean;
+  excess_amount_inr: number;
+  package_reference: string;
+}
+
+export interface BillGuardReport {
+  hospital_name: string;
+  total_billed_inr: number;
+  cghs_capped_total_inr: number;
+  total_overcharge_inr: number;
+  items: BillGuardAuditItem[];
+  legal_notice: string;
 }
 
 export interface PatientVitals {

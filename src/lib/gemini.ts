@@ -242,7 +242,7 @@ export function generateDeterministicSbarTriage(
   const specialists: string[] = ["Trauma Surgeon"];
   if (hasHead || gcs <= 12) specialists.push("Neurosurgery");
   if (hasFracture) specialists.push("Orthopedics");
-  if (hasChest || spo2 < 90) specialists.push("Thoracic Surgery");
+  if (hasChest || spo2 < 90) specialists.push("Thoracic Surgery", "Pulmonologist");
   if (sys < 90 || hasBleeding || urgency === "CRITICAL") specialists.push("Critical Care / Intensivist");
   if (specialists.length < 2) specialists.push("Emergency Medicine");
 
