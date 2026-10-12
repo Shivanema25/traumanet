@@ -44,7 +44,7 @@ export default function DocumentAIScanner({
           subtotal_inr: 26500,
           abha_subsidy_inr: 5000,
           insurance_deductible_inr: 0,
-          final_patient_deposit_inr: 2500,
+          final_patient_deposit_inr: 0,
         };
 
         const result = {
@@ -66,20 +66,20 @@ export default function DocumentAIScanner({
       } else {
         const breakdown: CostBreakdown = {
           items: [
-            { item: "Emergency ICU Bed Soft-Lock & Setup", cost_inr: 8000, covered_by_insurance_pct: 85 },
-            { item: "Trauma Bay Rapid Stabilization Kit", cost_inr: 5000, covered_by_insurance_pct: 90 },
+            { item: "Emergency ICU Bed Soft-Lock & Setup", cost_inr: 8000, covered_by_insurance_pct: 100 },
+            { item: "Trauma Bay Rapid Stabilization Kit", cost_inr: 5000, covered_by_insurance_pct: 100 },
             { item: "Whole Body Polytrauma CT (Pan-Scan)", cost_inr: 9000, covered_by_insurance_pct: 80 },
-            { item: "Emergency Blood Bank Cross-Match (4 units)", cost_inr: 4500, covered_by_insurance_pct: 75 },
+            { item: "Emergency Blood Bank Cross-Match", cost_inr: 4500, covered_by_insurance_pct: 80 },
           ],
           subtotal_inr: 26500,
           abha_subsidy_inr: 0,
-          insurance_deductible_inr: 5000,
-          final_patient_deposit_inr: 8500,
+          insurance_deductible_inr: 0,
+          final_patient_deposit_inr: 0,
         };
 
         const result = {
-          name: "Star Health Comprehensive Trauma Shield",
-          idNumber: "SH-EM-884210",
+          name: "Star Comprehensive Health Insurance",
+          idNumber: "POL-STAR-88392019-MH",
           provider: "Star Health & Allied Insurance",
           type: "Private Cashless TPA",
           coverageInr: 1000000,
@@ -94,7 +94,7 @@ export default function DocumentAIScanner({
           breakdown,
         });
       }
-    }, 1000);
+    }, 1200);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,55 +104,55 @@ export default function DocumentAIScanner({
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm space-y-4">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+    <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-3">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-blue-400" />
-          <h4 className="text-sm font-bold text-white">
+          <Sparkles className="w-4 h-4 text-blue-600" />
+          <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
             Document AI • ABHA &amp; Insurance Verification
           </h4>
         </div>
-        <span className="text-xs text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-medium">
-          Instant Pre-Auth
+        <span className="text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-semibold">
+          Instant Cashless Pre-Auth
         </span>
       </div>
 
       {scanning ? (
-        <div className="py-6 flex flex-col items-center justify-center space-y-3 bg-slate-950 rounded-xl border border-slate-800">
-          <div className="w-8 h-8 rounded-full border-2 border-blue-400 border-t-transparent animate-spin" />
+        <div className="py-6 flex flex-col items-center justify-center space-y-3 bg-slate-50 rounded-lg border border-slate-200">
+          <div className="w-8 h-8 rounded-full border-2 border-blue-600 border-t-transparent animate-spin" />
           <div className="text-center">
-            <div className="text-sm font-semibold text-white">Verifying Insurance Policy...</div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <div className="text-xs font-bold text-slate-900">Verifying Insurance Policy...</div>
+            <p className="text-[11px] text-slate-500 mt-0.5">
               Querying National Health Stack (ABHA) gateway
             </p>
           </div>
         </div>
       ) : scannedDoc ? (
-        <div className="bg-emerald-950/25 border border-emerald-500/40 rounded-xl p-4 space-y-3">
+        <div className="bg-emerald-50/70 border border-emerald-200 rounded-lg p-4 space-y-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2.5">
-              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+              <ShieldCheck className="w-5 h-5 text-emerald-600" />
               <div>
-                <span className="text-sm font-bold text-white">{scannedDoc.name}</span>
-                <p className="text-xs text-emerald-300 font-mono mt-0.5">{scannedDoc.idNumber}</p>
+                <span className="text-xs font-bold text-slate-900">{scannedDoc.name}</span>
+                <p className="text-xs text-emerald-800 font-mono mt-0.5">{scannedDoc.idNumber}</p>
               </div>
             </div>
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
               VERIFIED
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 text-xs bg-slate-950/70 p-3 rounded-xl border border-slate-800">
+          <div className="grid grid-cols-2 gap-3 text-xs bg-white p-3 rounded-lg border border-slate-200">
             <div>
-              <span className="text-slate-400">Total Sum Insured:</span>
-              <p className="text-sm font-bold text-white font-mono mt-0.5">
+              <span className="text-slate-500 font-medium">Total Sum Insured:</span>
+              <p className="text-sm font-bold text-slate-900 font-mono mt-0.5">
                 ₹{scannedDoc.coverageInr.toLocaleString("en-IN")}
               </p>
             </div>
             <div>
-              <span className="text-slate-400">Required Deposit:</span>
-              <p className="text-sm font-bold text-emerald-400 font-mono mt-0.5">
-                ₹{currentDepositInr.toLocaleString("en-IN")}
+              <span className="text-slate-500 font-medium">Required Upfront Deposit:</span>
+              <p className="text-sm font-bold text-emerald-700 font-mono mt-0.5">
+                ₹0 (Cashless Pre-Admission)
               </p>
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function DocumentAIScanner({
           <div className="flex justify-end pt-1">
             <button
               onClick={() => simulateDocAiScan("ABHA")}
-              className="text-xs text-slate-400 hover:text-white underline"
+              className="text-xs text-slate-600 hover:text-slate-900 underline font-medium"
             >
               Scan Another Card
             </button>
@@ -168,39 +168,39 @@ export default function DocumentAIScanner({
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="text-xs text-slate-600 leading-relaxed">
             Scan Ayushman Bharat (ABHA) ID or private cashless card to auto-apply subsidies and skip billing counters:
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <button
               onClick={() => simulateDocAiScan("ABHA")}
-              className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800/80 border border-slate-800 text-left transition-colors"
+              className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-colors cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
-                <CreditCard className="w-4 h-4 text-orange-400" />
+              <div className="w-9 h-9 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center shrink-0">
+                <CreditCard className="w-4 h-4 text-orange-600" />
               </div>
               <div>
-                <div className="text-xs font-bold text-white">Ayushman Bharat (ABHA)</div>
-                <div className="text-xs text-slate-400 mt-0.5">PM-JAY ₹5 Lakh Shield</div>
+                <div className="text-xs font-bold text-slate-900">Ayushman Bharat (ABHA)</div>
+                <div className="text-[11px] text-slate-500 mt-0.5">PM-JAY ₹5 Lakh Protection</div>
               </div>
             </button>
 
             <button
               onClick={() => simulateDocAiScan("PRIVATE")}
-              className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800/80 border border-slate-800 text-left transition-colors"
+              className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-colors cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-4 h-4 text-blue-400" />
+              <div className="w-9 h-9 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-4 h-4 text-blue-600" />
               </div>
               <div>
-                <div className="text-xs font-bold text-white">Star Health / Private TPA</div>
-                <div className="text-xs text-slate-400 mt-0.5">Instant Pre-Auth Waiver</div>
+                <div className="text-xs font-bold text-slate-900">Star Health / Private TPA</div>
+                <div className="text-[11px] text-slate-500 mt-0.5">Instant Pre-Auth Waiver</div>
               </div>
             </button>
           </div>
 
-          <label className="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-dashed border-slate-800 bg-slate-950/60 hover:bg-slate-950 text-slate-400 hover:text-slate-200 cursor-pointer text-xs transition-colors">
+          <label className="flex items-center justify-center gap-2 p-2.5 rounded-lg border border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-600 cursor-pointer text-xs transition-colors">
             <Upload className="w-3.5 h-3.5" />
             <span>Upload Card Image / PDF</span>
             <input
