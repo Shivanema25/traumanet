@@ -95,6 +95,13 @@ export default function HomeHubPage() {
 
             {/* Quick Demo Actions */}
             <div className="flex flex-wrap items-center gap-2.5">
+              <Link
+                href="/live"
+                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <Activity className="w-3.5 h-3.5 text-blue-200" />
+                <span>🔲 Open 3-Pane Live Cockpit</span>
+              </Link>
               <button
                 onClick={() => injectEmergencyScenario(0)}
                 className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer"

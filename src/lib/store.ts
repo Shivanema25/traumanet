@@ -24,7 +24,7 @@ export function getInitialState(): TraumaNetState {
       activeSessionId: "session-demo-01",
       offlineQueue: [],
       isOnline: true,
-      useLiveGemini: false,
+      useLiveGemini: true,
       geminiApiKey: "",
     };
   }
@@ -34,21 +34,29 @@ export function getInitialState(): TraumaNetState {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed.hospitals && parsed.sessions && parsed.sessions.length > 0) {
-        return parsed;
+        return {
+          ...parsed,
+          useLiveGemini: true,
+        };
       }
     }
   } catch (e) {
     console.debug("Failed reading state from localStorage:", e);
   }
 
-  // First time initialization starts completely clean (no fake ticker or auto-generated session)
+  // Live initialization with active emergency session & Gemini enabled
+  const defaultSession = createDemoSessionFromPreset(DEMO_SCENARIOS[0]);
   const state: TraumaNetState = {
-    hospitals: INITIAL_HOSPITALS,
-    sessions: [],
-    activeSessionId: null,
+    hospitals: INITIAL_HOSPITALS.map((h) =>
+      h.hospital_id === defaultSession.assigned_hospital_id
+        ? { ...h, is_soft_locked: true, soft_locked_session_id: defaultSession.session_id }
+        : h
+    ),
+    sessions: [defaultSession],
+    activeSessionId: defaultSession.session_id,
     offlineQueue: [],
     isOnline: navigator.onLine !== false,
-    useLiveGemini: false,
+    useLiveGemini: true,
     geminiApiKey: "",
   };
 

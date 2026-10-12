@@ -60,7 +60,7 @@ export type SeverityLevel = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
 export type PaymentStatus = "PENDING" | "PAID";
 
-export type BedLockStatus = "HOLD" | "ACCEPTED_LOCKED" | "DECLINED_REROUTED" | "ADMITTED";
+export type BedLockStatus = "HOLD" | "SOFT_LOCKED" | "ACCEPTED_LOCKED" | "DECLINED_REROUTED" | "ADMITTED";
 
 export interface PreReservations {
   blood_bank_units: number;
@@ -77,12 +77,13 @@ export interface PatientInfo {
   name: string;
   age: number;
   gender: "MALE" | "FEMALE" | "OTHER";
+  blood_group?: string;
   abha_id?: string;
   insurance_provider?: string;
   policy_number?: string;
   coverage_amount_inr?: number;
-  emergency_contact_name: string;
-  emergency_contact_phone: string;
+  emergency_contact_name?: string;
+  emergency_contact_phone?: string;
 }
 
 export interface CostBreakdownItem {

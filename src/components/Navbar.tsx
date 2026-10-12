@@ -39,11 +39,12 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Home Hub", icon: Layers },
+    { href: "/live", label: "Live Cockpit", icon: Activity },
     { href: "/map", label: "Nagpur Map", icon: Compass },
     { href: "/paramedic", label: "Paramedic", icon: Ambulance },
     { href: "/hospital-er", label: "Hospital ER", icon: Building2 },
     { href: "/family-portal", label: "Family Portal", icon: Users },
-    { href: "/admin-demo", label: "Demo & Judging", icon: Activity },
+    { href: "/admin-demo", label: "Demo & Judging", icon: Zap },
   ];
 
   return (
