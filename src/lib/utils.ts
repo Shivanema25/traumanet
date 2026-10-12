@@ -46,17 +46,17 @@ export function getTraumaScoreBadge(score: number): {
   if (score >= 8.0) {
     return {
       label: "PRIORITY 1 - RESUSCITATION",
-      badgeClass: "bg-red-950/80 text-red-400 border border-red-600/60 shadow-[0_0_15px_rgba(239,68,68,0.3)]",
+      badgeClass: "bg-red-50 text-red-700 border border-red-300 font-bold",
     };
   }
   if (score >= 5.0) {
     return {
       label: "PRIORITY 2 - EMERGENT",
-      badgeClass: "bg-amber-950/80 text-amber-400 border border-amber-600/60",
+      badgeClass: "bg-amber-50 text-amber-800 border border-amber-300 font-bold",
     };
   }
   return {
     label: "PRIORITY 3 - STABLE",
-    badgeClass: "bg-emerald-950/80 text-emerald-400 border border-emerald-600/60",
+    badgeClass: "bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold",
   };
 }

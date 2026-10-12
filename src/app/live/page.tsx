@@ -178,7 +178,7 @@ export default function LiveCockpitPage() {
   const isBedLocked = session.bed_status === "ACCEPTED_LOCKED";
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#E6EDF4] text-slate-900 flex flex-col font-sans">
       {/* Top Cockpit Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-slate-200 px-4 py-2.5 shadow-xs">
         <div className="max-w-[1920px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3">

@@ -78,7 +78,7 @@ export default function AdminDemoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-20 font-sans">
+    <div className="min-h-screen bg-[#E6EDF4] text-slate-900 pb-20 font-sans">
       {/* Top Demo Header */}
       <div className="bg-white border-b border-slate-200 px-4 py-3.5 sticky top-16 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">

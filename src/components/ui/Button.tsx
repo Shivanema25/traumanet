@@ -28,27 +28,27 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]";
+      "inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99]";
 
     const sizeStyles = {
       sm: "text-xs px-3 py-1.5 gap-1.5",
-      md: "text-sm px-4 py-2.5 gap-2",
-      lg: "text-base px-5 py-3 gap-2.5 font-semibold",
+      md: "text-sm px-4 py-2 gap-2",
+      lg: "text-base px-5 py-2.5 gap-2.5 font-semibold",
     };
 
     const variantStyles = {
       primary:
-        "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/25 focus:ring-blue-500 border border-blue-500/40",
+        "bg-blue-600 hover:bg-blue-700 text-white shadow-xs focus:ring-blue-500",
       emergency:
-        "bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/30 focus:ring-red-500 border border-red-500/50 animate-none",
+        "bg-red-600 hover:bg-red-700 text-white shadow-xs focus:ring-red-500",
       success:
-        "bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/25 focus:ring-emerald-500 border border-emerald-500/40",
+        "bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs focus:ring-emerald-500",
       warning:
-        "bg-amber-600 hover:bg-amber-500 text-white shadow-lg shadow-amber-600/25 focus:ring-amber-500 border border-amber-500/40",
+        "bg-amber-600 hover:bg-amber-700 text-white shadow-xs focus:ring-amber-500",
       outline:
-        "bg-slate-900/60 hover:bg-slate-800 text-slate-200 border border-slate-700/80 hover:border-slate-600 focus:ring-slate-500",
+        "bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-xs focus:ring-slate-400",
       ghost:
-        "bg-transparent hover:bg-slate-800/60 text-slate-400 hover:text-slate-100 focus:ring-slate-500",
+        "bg-transparent hover:bg-slate-200/70 text-slate-700 hover:text-slate-900 focus:ring-slate-400",
     };
 
     return (

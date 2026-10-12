@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { DashboardShell } from "@/components/layout/DashboardShell";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { StatusIndicator } from "@/components/ui/StatusIndicator";
-import { EmergencyStatus as EmergencyStatusType, EmergencySession } from "@/types";
+import { EmergencySession } from "@/types";
 import { subscribeEmergencySession } from "@/lib/firestore";
 import { MOCK_ACTIVE_SESSION } from "@/data/mockData";
 import { formatTime, formatDate } from "@/lib/utils";
@@ -14,12 +14,10 @@ import {
   ShieldAlert,
   Ambulance,
   Building2,
-  Clock,
   Heart,
   Wind,
   Gauge,
   ArrowUpRight,
-  Filter,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -34,7 +32,6 @@ export default function EmergencyPage() {
     return () => unsub();
   }, []);
 
-  // Comprehensive incident history for Nagpur
   const allIncidents: EmergencySession[] = [
     activeSession || MOCK_ACTIVE_SESSION,
     {
@@ -117,10 +114,10 @@ export default function EmergencyPage() {
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium transition-all ${
                 statusFilter === st
-                  ? "bg-blue-600 text-white font-bold shadow-lg shadow-blue-600/25 border border-blue-500"
-                  : "bg-slate-900/70 text-slate-400 hover:text-slate-200 border border-slate-800"
+                  ? "bg-blue-600 text-white font-bold shadow-xs border border-blue-600"
+                  : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-300 shadow-2xs"
               }`}
             >
               {st}
@@ -146,27 +143,27 @@ export default function EmergencyPage() {
               variant={isCurrentActive ? "emergency" : "default"}
               className="p-5 space-y-4"
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                       isCurrentActive
-                        ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                        : "bg-slate-800 text-slate-400 border border-slate-700"
+                        ? "bg-red-100 text-red-600 border border-red-200"
+                        : "bg-slate-100 text-slate-600 border border-slate-200"
                     }`}
                   >
                     <ShieldAlert className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-slate-100 text-sm sm:text-base">
+                      <span className="font-mono font-bold text-slate-900 text-sm sm:text-base">
                         {incident.incidentId}
                       </span>
-                      <span className="text-xs text-slate-400 font-mono">
+                      <span className="text-xs text-slate-600 font-mono">
                         Ambulance {incident.ambulanceId}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-400 font-mono">
+                    <p className="text-[11px] text-slate-500 font-mono">
                       Paramedic: {incident.paramedicId} &bull; Recorded {formatTime(incident.timestamp)} ({formatDate(incident.timestamp)})
                     </p>
                   </div>
@@ -186,52 +183,52 @@ export default function EmergencyPage() {
               </div>
 
               {/* Paramedic Notes */}
-              <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs">
-                <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block mb-1">
+              <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+                <span className="text-[10px] font-mono text-slate-500 font-semibold uppercase tracking-wider block mb-1">
                   Field Assessment & Notes
                 </span>
-                <p className="text-slate-200 leading-relaxed font-sans">
+                <p className="text-slate-800 leading-relaxed font-sans">
                   {incident.paramedicNotes}
                 </p>
               </div>
 
               {/* Vitals Snapshot */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
-                <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center gap-2">
-                  <Gauge className="w-4 h-4 text-slate-400" />
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center gap-2">
+                  <Gauge className="w-4 h-4 text-slate-500" />
                   <div>
-                    <span className="text-[10px] text-slate-400 block">BP</span>
-                    <span className="font-bold text-slate-200">
+                    <span className="text-[10px] text-slate-500 block">BP</span>
+                    <span className="font-bold text-slate-900">
                       {incident.vitals.bloodPressureSystolic}/{incident.vitals.bloodPressureDiastolic}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center gap-2">
-                  <Heart className="w-4 h-4 text-slate-400" />
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-slate-500" />
                   <div>
-                    <span className="text-[10px] text-slate-400 block">PULSE</span>
-                    <span className="font-bold text-slate-200">
+                    <span className="text-[10px] text-slate-500 block">PULSE</span>
+                    <span className="font-bold text-slate-900">
                       {incident.vitals.pulseBpm} BPM
                     </span>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center gap-2">
-                  <Wind className="w-4 h-4 text-slate-400" />
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center gap-2">
+                  <Wind className="w-4 h-4 text-slate-500" />
                   <div>
-                    <span className="text-[10px] text-slate-400 block">SPO2</span>
-                    <span className="font-bold text-slate-200">
+                    <span className="text-[10px] text-slate-500 block">SPO2</span>
+                    <span className="font-bold text-slate-900">
                       {incident.vitals.spO2Percent}%
                     </span>
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-slate-400" />
+                <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-slate-500" />
                   <div className="truncate">
-                    <span className="text-[10px] text-slate-400 block">DESTINATION</span>
-                    <span className="font-bold text-emerald-400 truncate block">
+                    <span className="text-[10px] text-slate-500 block">DESTINATION</span>
+                    <span className="font-bold text-emerald-700 truncate block">
                       {incident.targetHospitalName || "Triage Pending"}
                     </span>
                   </div>
@@ -239,8 +236,8 @@ export default function EmergencyPage() {
               </div>
 
               {/* Footer Actions */}
-              <div className="pt-2 flex items-center justify-between">
-                <span className="text-[11px] font-mono text-slate-400">
+              <div className="pt-2 flex items-center justify-between border-t border-slate-200">
+                <span className="text-[11px] font-mono text-slate-600">
                   {incident.familyPreReg?.patientName ? `Patient: ${incident.familyPreReg.patientName} (${incident.familyPreReg.abhaId || "ABHA Cashless"})` : "Patient: Triage En Route"}
                 </span>
 

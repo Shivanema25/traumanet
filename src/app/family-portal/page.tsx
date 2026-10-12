@@ -33,7 +33,7 @@ export default function FamilyPortalPage() {
   // If no active session yet
   if (!activeSession) {
     return (
-      <div className="min-h-screen bg-slate-50 text-slate-900 p-4 md:p-8 flex items-center justify-center font-sans">
+      <div className="min-h-screen bg-[#E6EDF4] text-slate-900 p-4 md:p-8 flex items-center justify-center font-sans">
         <div className="bg-white border border-slate-200 shadow-md rounded-2xl p-8 max-w-lg text-center space-y-5">
           <div className="w-14 h-14 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center mx-auto text-blue-600">
             <Users className="w-7 h-7" />
@@ -105,7 +105,7 @@ export default function FamilyPortalPage() {
   const isBedLocked = activeSession.bed_status === "ACCEPTED_LOCKED";
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 p-4 md:p-8 max-w-5xl mx-auto font-sans pb-24">
+    <div className="min-h-screen bg-[#E6EDF4] text-slate-900 p-4 md:p-8 max-w-5xl mx-auto font-sans pb-24">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-200 pb-5 mb-6 gap-3">
         <div className="flex items-center gap-3">

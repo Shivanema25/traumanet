@@ -16,25 +16,25 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const variantStyles = {
-    default: "bg-slate-800 text-slate-300 border-slate-700",
-    emergency: "bg-red-950/70 text-red-300 border-red-700/60 shadow-[0_0_12px_rgba(239,68,68,0.25)]",
-    success: "bg-emerald-950/70 text-emerald-300 border-emerald-700/60 shadow-[0_0_12px_rgba(16,185,129,0.25)]",
-    warning: "bg-amber-950/70 text-amber-300 border-amber-700/60 shadow-[0_0_12px_rgba(245,158,11,0.25)]",
-    electric: "bg-blue-950/70 text-blue-300 border-blue-700/60 shadow-[0_0_12px_rgba(59,130,246,0.25)]",
-    neutral: "bg-slate-800/80 text-slate-400 border-slate-700/70",
+    default: "bg-slate-100 text-slate-700 border-slate-300",
+    emergency: "bg-red-50 text-red-700 border-red-200",
+    success: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    warning: "bg-amber-50 text-amber-800 border-amber-200",
+    electric: "bg-blue-50 text-blue-700 border-blue-200",
+    neutral: "bg-slate-100 text-slate-600 border-slate-200",
   };
 
   const dotColors = {
-    default: "bg-slate-400",
-    emergency: "bg-red-500 animate-pulse",
-    success: "bg-emerald-400",
-    warning: "bg-amber-400 animate-pulse",
-    electric: "bg-blue-400 animate-pulse",
-    neutral: "bg-slate-500",
+    default: "bg-slate-500",
+    emergency: "bg-red-600 animate-pulse",
+    success: "bg-emerald-600",
+    warning: "bg-amber-600 animate-pulse",
+    electric: "bg-blue-600 animate-pulse",
+    neutral: "bg-slate-400",
   };
 
   const sizeStyles = {
-    sm: "text-[10px] font-semibold px-2 py-0.5 tracking-wider uppercase",
+    sm: "text-[10px] font-semibold px-2 py-0.5 tracking-wide uppercase",
     md: "text-xs font-medium px-2.5 py-1 tracking-wide",
   };
 

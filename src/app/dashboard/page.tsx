@@ -14,7 +14,6 @@ import { subscribeEmergencySession, subscribeHospitals, updateEmergencySession }
 import { rankHospitalsAndRoute } from "@/services/maps";
 import {
   Activity,
-  Ambulance,
   Bed,
   Building2,
   Clock,
@@ -22,7 +21,6 @@ import {
   ShieldAlert,
   Sparkles,
   ArrowUpRight,
-  TrendingDown,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -30,7 +28,6 @@ export default function DashboardPage() {
   const [session, setSession] = useState<EmergencySession | null>(null);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [recommendations, setRecommendations] = useState<HospitalRecommendation[]>([]);
-  const [loading, setLoading] = useState(true);
 
   // Subscribe to real-time emergency session & hospitals
   useEffect(() => {
@@ -56,7 +53,6 @@ export default function DashboardPage() {
       const score = session.sbarReport?.traumaScore || 7.5;
       const recs = await rankHospitalsAndRoute(origin, score);
       setRecommendations(recs);
-      setLoading(false);
     }
     updateRankings();
   }, [session]);
@@ -87,7 +83,7 @@ export default function DashboardPage() {
           title="Active Emergencies"
           value={session ? "1 CRITICAL" : "0"}
           subtitle="Wardha Road Corridor"
-          icon={<ShieldAlert className="w-4 h-4 text-red-400" />}
+          icon={<ShieldAlert className="w-4 h-4 text-red-600" />}
           variant="emergency"
           trend={{ value: "+1 call", isPositive: false }}
         />
@@ -97,7 +93,7 @@ export default function DashboardPage() {
           value="14.2"
           unit="min"
           subtitle="Median notification to ICU"
-          icon={<Clock className="w-4 h-4 text-emerald-400" />}
+          icon={<Clock className="w-4 h-4 text-emerald-600" />}
           variant="success"
           trend={{ value: "-8.4 min vs standard", isPositive: true }}
         />
@@ -107,7 +103,7 @@ export default function DashboardPage() {
           value={totalOpenBeds}
           unit={`/ ${totalBeds} total`}
           subtitle="5 Verified Trauma Centers"
-          icon={<Bed className="w-4 h-4 text-blue-400" />}
+          icon={<Bed className="w-4 h-4 text-blue-600" />}
           variant="electric"
         />
 
@@ -116,7 +112,7 @@ export default function DashboardPage() {
           value="98.4"
           unit="%"
           subtitle="Zero bed turn-aways"
-          icon={<Building2 className="w-4 h-4 text-amber-400" />}
+          icon={<Building2 className="w-4 h-4 text-amber-600" />}
           variant="warning"
           trend={{ value: "Grade A+ Audit", isPositive: true }}
         />
@@ -133,7 +129,7 @@ export default function DashboardPage() {
               <Card variant="default">
                 <CardHeader>
                   <CardTitle>
-                    <Activity className="w-4 h-4 text-red-500 animate-pulse" />
+                    <Activity className="w-4 h-4 text-red-600 animate-pulse" />
                     <span>Real-Time Patient Telemetry</span>
                   </CardTitle>
                 </CardHeader>
@@ -142,10 +138,10 @@ export default function DashboardPage() {
 
                   {/* Multimodal Gemini Handover Summary */}
                   {session.sbarReport && (
-                    <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
+                    <div className="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 space-y-2">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-mono text-blue-400 flex items-center gap-1.5 font-semibold">
-                          <Sparkles className="w-3.5 h-3.5" />
+                        <span className="font-semibold text-blue-900 flex items-center gap-1.5 font-sans">
+                          <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                           Gemini 1.5 Clinical SBAR Handover
                         </span>
                         <Badge
@@ -156,26 +152,26 @@ export default function DashboardPage() {
                         </Badge>
                       </div>
 
-                      <div className="text-xs text-slate-300 space-y-2 pt-1 font-sans leading-relaxed">
+                      <div className="text-xs text-slate-800 space-y-2 pt-1 font-sans leading-relaxed">
                         <p>
-                          <strong className="text-slate-100 font-mono">Situation:</strong>{" "}
+                          <strong className="text-slate-900 font-semibold">Situation:</strong>{" "}
                           {session.sbarReport.situation}
                         </p>
                         <p>
-                          <strong className="text-slate-100 font-mono">Assessment:</strong>{" "}
+                          <strong className="text-slate-900 font-semibold">Assessment:</strong>{" "}
                           {session.sbarReport.assessment}
                         </p>
-                        <p className="text-emerald-300">
-                          <strong className="text-slate-100 font-mono">Recommendation:</strong>{" "}
+                        <p className="text-emerald-900 font-medium">
+                          <strong className="text-slate-900 font-semibold">Recommendation:</strong>{" "}
                           {session.sbarReport.recommendation}
                         </p>
                       </div>
 
-                      <div className="pt-2 border-t border-slate-800 flex flex-wrap gap-1">
+                      <div className="pt-2 border-t border-blue-200 flex flex-wrap gap-1">
                         {session.sbarReport.suspectedInjuries.map((inj, i) => (
                           <span
                             key={i}
-                            className="text-[10px] font-mono px-2 py-0.5 rounded bg-red-950/50 text-red-300 border border-red-900/40"
+                            className="text-[10px] font-medium px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-200"
                           >
                             {inj}
                           </span>
@@ -191,11 +187,11 @@ export default function DashboardPage() {
             <div className="lg:col-span-7 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-blue-400" />
+                  <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-blue-700" />
                     <span>AI-Ranked Receiving Hospitals</span>
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-600">
                     Ranked by specialty readiness, open ICU beds, and Golden Hour corridor transit time.
                   </p>
                 </div>
@@ -226,16 +222,16 @@ export default function DashboardPage() {
       )}
 
       {/* Corridor Overview Banner */}
-      <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800/80 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="p-4 rounded-xl bg-white border border-slate-300 shadow-xs flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400">
+          <div className="w-10 h-10 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-700">
             <MapPin className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-slate-100">
+            <h4 className="text-sm font-bold text-slate-900">
               Nagpur Emergency Road Corridors Online
             </h4>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-600">
               Wardha Road / Airport Flyover Hub &bull; Samruddhi Mahamarg Interchange &bull; Kamptee Commercial Zone
             </p>
           </div>

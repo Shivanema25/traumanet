@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function NagpurMapPage() {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 p-4 md:p-8 max-w-6xl mx-auto font-sans pb-24">
+    <div className="min-h-screen bg-[#E6EDF4] text-slate-900 p-4 md:p-8 max-w-6xl mx-auto font-sans pb-24">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-200 pb-5 mb-6 gap-3">
         <div>

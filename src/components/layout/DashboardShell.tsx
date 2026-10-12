@@ -14,7 +14,7 @@ export function DashboardShell({ children, title, subtitle }: DashboardShellProp
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-[#E6EDF4] text-slate-900 flex flex-col lg:flex-row font-sans">
       {/* Sidebar navigation */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -22,7 +22,7 @@ export function DashboardShell({ children, title, subtitle }: DashboardShellProp
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-30 lg:hidden"
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-30 lg:hidden"
         />
       )}
 
@@ -33,7 +33,7 @@ export function DashboardShell({ children, title, subtitle }: DashboardShellProp
           title={title}
           subtitle={subtitle}
         />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+        <main className="flex-1 p-4 sm:p-6 lg:p-7 max-w-7xl w-full mx-auto space-y-6">
           {children}
         </main>
       </div>

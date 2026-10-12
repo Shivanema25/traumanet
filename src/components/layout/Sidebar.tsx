@@ -89,23 +89,23 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-slate-950/90 backdrop-blur-xl border-r border-slate-800/80 flex flex-col justify-between transition-transform duration-300 lg:translate-x-0",
+        "fixed lg:sticky top-0 left-0 z-40 h-screen w-64 bg-[#162E4A] text-slate-100 border-r border-[#203F64] flex flex-col justify-between transition-transform duration-300 lg:translate-x-0 shadow-md",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}
     >
       {/* Brand Header */}
       <div>
-        <div className="h-16 px-6 flex items-center justify-between border-b border-slate-800/80">
+        <div className="h-16 px-6 flex items-center justify-between border-b border-[#203F64]">
           <Link href="/dashboard" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-lg shadow-red-500/25 border border-red-400/40 group-hover:scale-105 transition-transform">
-              <Activity className="w-5 h-5 text-white animate-pulse" />
+            <div className="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center shadow-sm group-hover:bg-red-500 transition-colors">
+              <Activity className="w-5 h-5 text-white" />
             </div>
             <div>
-              <span className="font-bold text-lg text-white tracking-tight flex items-center gap-1.5">
-                Trauma<span className="text-red-500">Net</span>
+              <span className="font-bold text-lg text-white tracking-tight flex items-center gap-1">
+                Trauma<span className="text-red-400">Net</span>
               </span>
-              <p className="text-[10px] text-slate-400 font-mono tracking-wider uppercase">
-                Logistics Command
+              <p className="text-[10px] text-slate-300 font-mono tracking-wider uppercase">
+                Emergency Logistics
               </p>
             </div>
           </Link>
@@ -124,19 +124,17 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                 href={item.href}
                 onClick={onClose}
                 className={cn(
-                  "flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all group",
+                  "flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all",
                   isActive
-                    ? "bg-slate-800/90 text-white font-semibold shadow-inner border border-slate-700/80"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/60"
+                    ? "bg-[#254A74] text-white font-semibold shadow-xs"
+                    : "text-slate-300 hover:text-white hover:bg-[#1D3B5E]"
                 )}
               >
                 <div className="flex items-center gap-3">
                   <Icon
                     className={cn(
                       "w-4 h-4 transition-colors",
-                      isActive
-                        ? "text-red-400"
-                        : "text-slate-400 group-hover:text-slate-200"
+                      isActive ? "text-red-400" : "text-slate-400"
                     )}
                   />
                   <span>{item.label}</span>
@@ -145,13 +143,13 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                 {item.badge && (
                   <span
                     className={cn(
-                      "text-[9px] font-mono px-1.5 py-0.5 rounded uppercase tracking-wider font-bold",
+                      "text-[9px] font-mono px-1.5 py-0.5 rounded font-bold uppercase tracking-wider",
                       item.badgeVariant === "emergency" &&
-                        "bg-red-950/80 text-red-400 border border-red-800/60",
+                        "bg-red-500/20 text-red-300 border border-red-400/40",
                       item.badgeVariant === "electric" &&
-                        "bg-blue-950/80 text-blue-400 border border-blue-800/60",
+                        "bg-blue-500/20 text-blue-300 border border-blue-400/40",
                       item.badgeVariant === "success" &&
-                        "bg-emerald-950/80 text-emerald-400 border border-emerald-800/60"
+                        "bg-emerald-500/20 text-emerald-300 border border-emerald-400/40"
                     )}
                   >
                     {item.badge}
@@ -164,17 +162,17 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       </div>
 
       {/* Network System Footer Status */}
-      <div className="p-4 border-t border-slate-800/80 bg-slate-950/50">
-        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80">
+      <div className="p-4 border-t border-[#203F64] bg-[#11243A]">
+        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#183353] border border-[#23456C]">
           <div className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-mono font-medium text-slate-200 truncate">
+            <p className="text-[11px] font-semibold text-slate-100 truncate">
               Nagpur Mesh Online
             </p>
-            <p className="text-[9px] text-slate-400 font-mono truncate">
+            <p className="text-[10px] text-slate-300 font-mono truncate">
               5 Hospitals &bull; RT-Sync 14ms
             </p>
           </div>
