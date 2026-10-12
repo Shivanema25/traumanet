@@ -14,6 +14,7 @@ import {
   Settings,
   MapPin,
   Navigation,
+  Compass,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -38,7 +39,7 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Home Hub", icon: Layers },
-    { href: "/navigation", label: "Live GPS Map", icon: Navigation },
+    { href: "/map", label: "Nagpur Map", icon: Compass },
     { href: "/paramedic", label: "Paramedic", icon: Ambulance },
     { href: "/hospital-er", label: "Hospital ER", icon: Building2 },
     { href: "/family-portal", label: "Family Portal", icon: Users },

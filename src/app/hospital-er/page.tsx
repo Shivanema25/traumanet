@@ -23,6 +23,7 @@ import {
 import SoftLockTimer from "@/components/SoftLockTimer";
 import VitalsMonitor from "@/components/VitalsMonitor";
 import LiveMap from "@/components/LiveMap";
+import NagpurMap from "@/components/NagpurMap";
 import { playErAlertChime } from "@/lib/audio";
 import Link from "next/link";
 
@@ -415,12 +416,20 @@ export default function HospitalErPage() {
         {/* Live Ambulance Corridor Map */}
         <div className="backdrop-blur-md bg-slate-900/80 border border-slate-800 shadow-2xl rounded-2xl p-5 md:p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              Live Ambulance Corridor &amp; Real-Time Arrival Vector
-            </h3>
-            <span className="text-xs font-mono text-emerald-400 font-bold">ETA ~ {activeSession.eta_minutes} MINS</span>
+            <div>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                Live Nagpur Ambulance Corridor &amp; Arrival Vector (OSRM)
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Real-time route tracking between accident corridor and partner trauma centers
+              </p>
+            </div>
+            <span className="text-xs font-mono text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+              ETA ~ {activeSession.eta_minutes || 8} MINS
+            </span>
           </div>
-          <LiveMap session={activeSession} hospitals={hospitals} height="360px" />
+          <NagpurMap height="380px" showSoftLockAction={false} />
         </div>
       </div>
     </div>

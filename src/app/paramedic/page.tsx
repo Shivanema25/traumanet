@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useTraumaNet } from "@/lib/TraumaNetContext";
 import Link from "next/link";
+import NagpurMap from "@/components/NagpurMap";
 
 export default function ParamedicPage() {
   const { createSession, hospitals } = useTraumaNet();
@@ -408,6 +409,21 @@ export default function ParamedicPage() {
               );
             })}
           </div>
+        </div>
+
+        {/* Section 5: Real-Time Nagpur Emergency Corridor & Shortest Path (OSRM) */}
+        <div className="backdrop-blur-md bg-slate-900/80 border border-slate-800 shadow-2xl rounded-2xl p-5 md:p-6 space-y-3.5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+              <Navigation className="w-4 h-4 text-[#3B82F6]" /> 5. Live Nagpur Route &amp; Hospital Corridor
+            </h2>
+            <span className="text-[11px] font-mono text-emerald-400">OSRM Shortest Path • Instant Leaflet HUD</span>
+          </div>
+          <NagpurMap
+            height="360px"
+            onHospitalSelect={(h) => setTargetHospitalId(h.id)}
+            showSoftLockAction={false}
+          />
         </div>
 
         {/* Big Trigger: [🚀 ANALYZE & ROUTE VIA GEMINI] */}
