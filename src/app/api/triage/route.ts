@@ -32,13 +32,24 @@ export async function POST(req: NextRequest) {
       if (vitalsRaw) {
         try {
           const v = JSON.parse(vitalsRaw);
+          let sys = 120;
+          let dia = 80;
+          if (v.bp && typeof v.bp === "string") {
+            const parts = v.bp.split(/[\/\s-]+/);
+            sys = Number(parts[0]) || 120;
+            dia = Number(parts[1]) || 80;
+          } else {
+            sys = Number(v.blood_pressure_sys) || 120;
+            dia = Number(v.blood_pressure_dia) || 80;
+          }
+
           parsedVitals = {
-            blood_pressure_sys: Number(v.blood_pressure_sys) || 120,
-            blood_pressure_dia: Number(v.blood_pressure_dia) || 80,
-            pulse_rate: Number(v.pulse_rate) || 80,
+            blood_pressure_sys: sys,
+            blood_pressure_dia: dia,
+            pulse_rate: Number(v.pulse || v.pulse_rate) || 80,
             spo2: Number(v.spo2) || 98,
-            respiratory_rate: Number(v.respiratory_rate) || 16,
-            gcs_score: Number(v.gcs_score) || 15,
+            respiratory_rate: Number(v.respiratory_rate || v.respRate) || 16,
+            gcs_score: Number(v.gcs_score || v.gcs) || 15,
             temperature_c: Number(v.temperature_c) || 37.0,
           };
         } catch (e) {
@@ -54,13 +65,24 @@ export async function POST(req: NextRequest) {
 
         if (body.vitals) {
           const v = typeof body.vitals === "string" ? JSON.parse(body.vitals) : body.vitals;
+          let sys = 120;
+          let dia = 80;
+          if (v.bp && typeof v.bp === "string") {
+            const parts = v.bp.split(/[\/\s-]+/);
+            sys = Number(parts[0]) || 120;
+            dia = Number(parts[1]) || 80;
+          } else {
+            sys = Number(v.blood_pressure_sys) || 120;
+            dia = Number(v.blood_pressure_dia) || 80;
+          }
+
           parsedVitals = {
-            blood_pressure_sys: Number(v.blood_pressure_sys) || 120,
-            blood_pressure_dia: Number(v.blood_pressure_dia) || 80,
-            pulse_rate: Number(v.pulse_rate) || 80,
+            blood_pressure_sys: sys,
+            blood_pressure_dia: dia,
+            pulse_rate: Number(v.pulse || v.pulse_rate) || 80,
             spo2: Number(v.spo2) || 98,
-            respiratory_rate: Number(v.respiratory_rate) || 16,
-            gcs_score: Number(v.gcs_score) || 15,
+            respiratory_rate: Number(v.respiratory_rate || v.respRate) || 16,
+            gcs_score: Number(v.gcs_score || v.gcs) || 15,
             temperature_c: Number(v.temperature_c) || 37.0,
           };
         }
