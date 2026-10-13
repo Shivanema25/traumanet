@@ -27,7 +27,7 @@ import NagpurMap from "@/components/NagpurMap";
 import { translateRegionalToEnglish } from "@/lib/medicalTranslation";
 
 export default function ParamedicPage() {
-  const { createSession, hospitals } = useTraumaNet();
+  const { createSession, hospitals, geminiApiKey } = useTraumaNet();
 
   // Manual User Input States (Zero auto-simulation / zero fake tickers)
   const [bp, setBp] = useState("");
@@ -95,7 +95,7 @@ export default function ParamedicPage() {
       const res = await fetch("/api/ai/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notes: textToTranslate }),
+        body: JSON.stringify({ notes: textToTranslate, apiKey: geminiApiKey || undefined }),
       });
       const data = await res.json();
       if (data.success && data.englishNotes) {
@@ -259,6 +259,9 @@ export default function ParamedicPage() {
       })
     );
     formData.append("notes", notes || "No additional field notes provided");
+    if (geminiApiKey) {
+      formData.append("apiKey", geminiApiKey);
+    }
 
     try {
       const res = await fetch("/api/triage", {

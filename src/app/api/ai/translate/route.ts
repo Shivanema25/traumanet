@@ -5,13 +5,16 @@ import { translateRegionalToEnglish } from "@/lib/medicalTranslation";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { notes } = body;
+    const { notes, apiKey: explicitKey } = body;
 
     if (!notes || typeof notes !== "string" || !notes.trim()) {
       return NextResponse.json({ success: true, englishNotes: "" });
     }
 
-    const key = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    const key =
+      explicitKey ||
+      process.env.GEMINI_API_KEY ||
+      process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
     if (key && !key.includes("Mock")) {
       try {
