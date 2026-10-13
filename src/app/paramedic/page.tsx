@@ -241,6 +241,14 @@ export default function ParamedicPage() {
     }
   };
 
+  const handleQuickDemoFill = () => {
+    setBp("90/60");
+    setPulse("124");
+    setSpo2("89");
+    setRespRate("28");
+    setNotes("35yo male, motorcycle accident near Wardha flyover, severe blunt chest trauma, acute dyspnea, active profuse bleeding, crashing blood pressure.");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -273,6 +281,10 @@ export default function ParamedicPage() {
 
       if (json.success && json.data) {
         setAiReport(json.data);
+        setTimeout(() => {
+          const el = document.getElementById("sbar-output-report");
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 150);
 
         // Parse BP
         const bpParts = (bp || "120/80").split(/[\/\s-]+/);
@@ -355,7 +367,15 @@ export default function ParamedicPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={handleQuickDemoFill}
+            className="text-xs bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 px-3 py-1.5 rounded-lg font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
+            title="Pre-fill realistic trauma vitals & notes for instant testing"
+          >
+            <span>⚡ Quick Demo Case</span>
+          </button>
           <span className="text-xs bg-white text-slate-700 border border-slate-200 px-3 py-1.5 rounded-lg font-mono shadow-xs">
             Ambulance: <strong className="text-slate-900">MH-31-ALS-108</strong>
           </span>
@@ -718,14 +738,17 @@ export default function ParamedicPage() {
 
       {/* Gemini SBAR Output Display Card */}
       {aiReport && (
-        <div className="mt-8 bg-white border border-slate-200 rounded-xl p-6 space-y-5 shadow-sm">
+        <div id="sbar-output-report" className="mt-8 bg-white border border-slate-200 rounded-xl p-6 space-y-5 shadow-sm scroll-mt-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-200 pb-4 gap-3">
             <span className="text-xs uppercase tracking-wider font-bold text-slate-900 flex items-center gap-2">
               <ShieldAlert className="w-5 h-5 text-red-600" /> Gemini 1.5 Clinical SBAR Handover Report
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs px-3 py-1 bg-red-50 text-red-700 border border-red-200 rounded-full font-bold">
                 Trauma Score: {aiReport.trauma_score} / 10 ({aiReport.urgency})
+              </span>
+              <span className="text-xs px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full font-bold flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Soft-Locked at {hospitals.find(h => h.hospital_id === targetHospitalId)?.name || "Kingsway Hospitals"}
               </span>
             </div>
           </div>
@@ -734,34 +757,72 @@ export default function ParamedicPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
             <div className="bg-red-50/50 p-4 rounded-lg border border-red-200 space-y-1">
               <span className="font-bold text-red-700 uppercase tracking-wider block">S - Situation</span>
-              <p className="text-slate-800 leading-relaxed">{aiReport.sbar?.situation}</p>
+              <p className="text-slate-800 leading-relaxed font-medium">{aiReport.sbar?.situation}</p>
             </div>
             <div className="bg-blue-50/50 p-4 rounded-lg border border-blue-200 space-y-1">
               <span className="font-bold text-blue-700 uppercase tracking-wider block">B - Background</span>
-              <p className="text-slate-800 leading-relaxed">{aiReport.sbar?.background}</p>
+              <p className="text-slate-800 leading-relaxed font-medium">{aiReport.sbar?.background}</p>
             </div>
             <div className="bg-amber-50/50 p-4 rounded-lg border border-amber-200 space-y-1">
               <span className="font-bold text-amber-700 uppercase tracking-wider block">A - Assessment</span>
-              <p className="text-slate-800 leading-relaxed">{aiReport.sbar?.assessment}</p>
+              <p className="text-slate-800 leading-relaxed font-medium">{aiReport.sbar?.assessment}</p>
             </div>
             <div className="bg-emerald-50/50 p-4 rounded-lg border border-emerald-200 space-y-1">
               <span className="font-bold text-emerald-700 uppercase tracking-wider block">R - Recommendation</span>
-              <p className="text-slate-800 leading-relaxed">{aiReport.sbar?.recommendation}</p>
+              <p className="text-slate-800 leading-relaxed font-medium">{aiReport.sbar?.recommendation}</p>
             </div>
           </div>
 
-          {/* Transmission Confirmation & Quick Nav Pills */}
-          <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+          {/* Required ER Specialists */}
+          {aiReport.required_specialists && aiReport.required_specialists.length > 0 && (
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 text-xs flex flex-wrap items-center gap-2">
+              <span className="font-bold text-slate-700 uppercase tracking-wider">Required ER Specialists:</span>
+              {aiReport.required_specialists.map((spec: string, i: number) => (
+                <span key={i} className="px-2.5 py-1 bg-white border border-slate-300 text-slate-800 rounded-md font-bold shadow-2xs">
+                  👨‍⚕️ {spec}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Stabilization Protocols */}
+          {aiReport.stabilization_steps && aiReport.stabilization_steps.length > 0 && (
+            <div className="bg-emerald-50/60 border border-emerald-200 rounded-lg p-3.5 text-xs space-y-1.5">
+              <span className="font-bold text-emerald-800 uppercase tracking-wider block">Immediate In-Transit Stabilization Protocol:</span>
+              <ul className="list-disc list-inside space-y-1 text-slate-800">
+                {aiReport.stabilization_steps.map((step: string, i: number) => (
+                  <li key={i} className="font-medium">{step}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Transmission Confirmation & Multi-Portal Navigation Links */}
+          <div className="pt-4 border-t border-slate-200 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
             <span className="text-xs text-emerald-700 font-bold flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Transmitted to Hospital ER Command Center
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Transmitted &amp; Soft-Locked with Receiving Trauma ER
             </span>
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
               <Link
                 href="/hospital-er"
                 className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
               >
                 <Building2 className="w-3.5 h-3.5 text-blue-400" />
-                <span>Open ER Command View</span>
+                <span>1. Open Hospital ER Command</span>
+              </Link>
+              <Link
+                href="/live"
+                className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+              >
+                <Activity className="w-3.5 h-3.5 text-white" />
+                <span>2. Track Live Operations</span>
+              </Link>
+              <Link
+                href="/family-portal"
+                className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                <span>3. View Family Portal</span>
               </Link>
             </div>
           </div>
