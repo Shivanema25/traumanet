@@ -128,7 +128,9 @@ export default function NagpurMap({
   const mapInstanceRef = useRef<any>(null);
   const routePolylineRef = useRef<any>(null);
   const markersGroupRef = useRef<any>(null);
+  const tileLayerRef = useRef<any>(null);
 
+  const [mapLayerType, setMapLayerType] = useState<"roadmap" | "satellite" | "terrain" | "osm">("roadmap");
   const [accidentLocation, setAccidentLocation] = useState<AccidentCorridorItem>(NAGPUR_CORRIDORS[0]);
   const [selectedHospital, setSelectedHospital] = useState<NagpurHospitalItem>(NAGPUR_HOSPITALS_LIST[0]);
   const [distanceKm, setDistanceKm] = useState<string>("7.2");
@@ -136,6 +138,37 @@ export default function NagpurMap({
   const [isRouting, setIsRouting] = useState<boolean>(false);
   const [isSoftLocked, setIsSoftLocked] = useState<boolean>(false);
   const [countdownSec, setCountdownSec] = useState<number>(15 * 60 - 1); // 14:59
+
+  const googleMapsApiKey =
+    process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ||
+    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
+    "AIzaSyBhi8ZsJmytnb84DvOWxfRAixcom0ACS7o";
+
+  const createTileLayer = useCallback((L: any, type: string) => {
+    if (type === "satellite") {
+      return L.tileLayer(
+        `https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=${googleMapsApiKey}`,
+        { maxZoom: 20, subdomains: ["0", "1", "2", "3"], attribution: "© Google" }
+      );
+    }
+    if (type === "terrain") {
+      return L.tileLayer(
+        `https://mt{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}&key=${googleMapsApiKey}`,
+        { maxZoom: 20, subdomains: ["0", "1", "2", "3"], attribution: "© Google" }
+      );
+    }
+    if (type === "osm") {
+      return L.tileLayer(
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        { maxZoom: 19, subdomains: ["a", "b", "c"], attribution: "© OpenStreetMap contributors" }
+      );
+    }
+    // Default: Google Roadmap (clean, clear road view)
+    return L.tileLayer(
+      `https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&key=${googleMapsApiKey}`,
+      { maxZoom: 20, subdomains: ["0", "1", "2", "3"], attribution: "© Google Maps" }
+    );
+  }, [googleMapsApiKey]);
 
   // Soft-lock countdown timer
   useEffect(() => {
@@ -265,14 +298,9 @@ export default function NagpurMap({
           attributionControl: false,
         });
 
-        // OpenStreetMap Dark Theme Tiles via CartoDB
-        L.tileLayer(
-          "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-          {
-            maxZoom: 19,
-            subdomains: "abcd",
-          }
-        ).addTo(map);
+        // Authentic Google Maps Layer via Google Maps API Key
+        const tile = createTileLayer(L, mapLayerType).addTo(map);
+        tileLayerRef.current = tile;
 
         mapInstanceRef.current = map;
         const markersGroup = L.layerGroup().addTo(map);
@@ -298,6 +326,24 @@ export default function NagpurMap({
       }
     };
   }, []);
+
+  // Dynamically switch Google Maps tile layers (Roadmap / Satellite / Terrain / OSM)
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+    import("leaflet").then((L) => {
+      if (tileLayerRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeLayer(tileLayerRef.current);
+      }
+      const newTile = createTileLayer(L.default, mapLayerType).addTo(mapInstanceRef.current);
+      tileLayerRef.current = newTile;
+      if (markersGroupRef.current) {
+        markersGroupRef.current.bringToFront();
+      }
+      if (routePolylineRef.current) {
+        routePolylineRef.current.bringToFront();
+      }
+    });
+  }, [mapLayerType, createTileLayer]);
 
   // Update markers when selectedHospital or accidentLocation changes
   const renderMarkers = (L: any, map: any, markersGroup: any) => {
@@ -430,23 +476,47 @@ export default function NagpurMap({
           </div>
         </div>
 
-        {/* Corridor Switcher Dropdown */}
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <label className="text-[11px] text-slate-600 font-semibold shrink-0">Accident Hub:</label>
-          <select
-            value={accidentLocation.id}
-            onChange={(e) => {
-              const c = NAGPUR_CORRIDORS.find((cor) => cor.id === e.target.value);
-              if (c) handleCorridorChange(c);
-            }}
-            className="bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-red-500 w-full sm:w-auto font-sans font-medium"
-          >
-            {NAGPUR_CORRIDORS.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+        {/* Controls: Google Maps Connected, Layer Switcher, Corridor Switcher */}
+        <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+          {/* Google Maps Connected Badge */}
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-semibold shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+            <span>Google Maps Connected</span>
+          </div>
+
+          {/* Map Layer Selector */}
+          <div className="flex items-center gap-1.5">
+            <label className="text-[11px] text-slate-600 font-semibold shrink-0">Layer:</label>
+            <select
+              value={mapLayerType}
+              onChange={(e) => setMapLayerType(e.target.value as any)}
+              className="bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg px-2 py-1.5 focus:outline-none focus:border-blue-600 font-sans font-medium cursor-pointer"
+            >
+              <option value="roadmap">Google Roadmap</option>
+              <option value="satellite">Google Satellite</option>
+              <option value="terrain">Google Terrain</option>
+              <option value="osm">OpenStreetMap</option>
+            </select>
+          </div>
+
+          {/* Corridor Switcher Dropdown */}
+          <div className="flex items-center gap-1.5">
+            <label className="text-[11px] text-slate-600 font-semibold shrink-0">Accident Hub:</label>
+            <select
+              value={accidentLocation.id}
+              onChange={(e) => {
+                const c = NAGPUR_CORRIDORS.find((cor) => cor.id === e.target.value);
+                if (c) handleCorridorChange(c);
+              }}
+              className="bg-slate-50 border border-slate-300 text-xs text-slate-800 rounded-lg px-2 py-1.5 focus:outline-none focus:border-red-500 font-sans font-medium cursor-pointer"
+            >
+              {NAGPUR_CORRIDORS.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 

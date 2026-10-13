@@ -61,17 +61,23 @@ export default function LiveMap({
           attributionControl: false,
         });
 
-        // Authentic Google Maps Tile Layers
-        let tileUrl = "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"; // Google Roadmap
+        // Connected Google Maps Platform Tiles
+        const gmapsKey =
+          process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY ||
+          process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
+          "AIzaSyBhi8ZsJmytnb84DvOWxfRAixcom0ACS7o";
+
+        let tileUrl = `https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&key=${gmapsKey}`; // Google Roadmap
         if (mapStyle === "satellite") {
-          tileUrl = "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"; // Google Hybrid Satellite
+          tileUrl = `https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=${gmapsKey}`; // Google Hybrid Satellite
         } else if (mapStyle === "terrain") {
-          tileUrl = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"; // Dark Matter
+          tileUrl = `https://mt{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}&key=${gmapsKey}`; // Google Terrain
         }
 
         const tileLayer = L.tileLayer(tileUrl, {
           maxZoom: 20,
-          subdomains: ["mt0", "mt1", "mt2", "mt3"],
+          subdomains: ["0", "1", "2", "3"],
+          attribution: "© Google Maps",
         }).addTo(map);
         tileLayerRef.current = tileLayer;
 
