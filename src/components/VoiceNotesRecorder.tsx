@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Mic, MicOff, Languages, Sparkles } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Mic, MicOff, Languages, Sparkles, Volume2 } from "lucide-react";
+import { translateRegionalToEnglish } from "@/lib/medicalTranslation";
 
 interface VoiceNotesRecorderProps {
   value: string;
@@ -17,8 +18,17 @@ export default function VoiceNotesRecorder({
   onLanguageChange,
 }: VoiceNotesRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [interimTranscript, setInterimTranscript] = useState("");
   const [lang, setLang] = useState<"hi-IN" | "mr-IN" | "en-IN">(selectedLanguage);
   const [hasSpeechRecognition, setHasSpeechRecognition] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  const recognitionRef = useRef<any>(null);
+  const isRecordingRef = useRef<boolean>(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const langRef = useRef<"hi-IN" | "mr-IN" | "en-IN">(lang);
+  langRef.current = lang;
 
   useEffect(() => {
     if (
@@ -27,89 +37,202 @@ export default function VoiceNotesRecorder({
     ) {
       setHasSpeechRecognition(true);
     }
+
+    return () => {
+      isRecordingRef.current = false;
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {}
+      }
+    };
   }, []);
+
+  const formatTime = (secs: number) => {
+    const m = Math.floor(secs / 60).toString().padStart(2, "0");
+    const s = (secs % 60).toString().padStart(2, "0");
+    return `${m}:${s}`;
+  };
 
   const handleLangSelect = (newLang: "hi-IN" | "mr-IN" | "en-IN") => {
     setLang(newLang);
     if (onLanguageChange) onLanguageChange(newLang);
   };
 
-  const toggleRecording = () => {
+  // Polish notes into crisp medical English using AI / dictionary fallback
+  const polishNotesToEnglish = async (textToTranslate?: string) => {
+    const text = textToTranslate !== undefined ? textToTranslate : value;
+    if (!text || !text.trim()) return;
+
+    setIsTranslating(true);
+    try {
+      const res = await fetch("/api/ai/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes: text }),
+      });
+      const data = await res.json();
+      if (data.success && data.englishNotes) {
+        onChange(data.englishNotes);
+      }
+    } catch (err) {
+      console.warn("AI translation error, falling back to dictionary:", err);
+      onChange(translateRegionalToEnglish(text));
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const stopRecording = () => {
+    isRecordingRef.current = false;
+    setIsRecording(false);
+    setInterimTranscript("");
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {}
+    }
+
+    // Auto-polish to clinical English on stop
+    setTimeout(() => {
+      polishNotesToEnglish();
+    }, 250);
+  };
+
+  const startRecording = () => {
     if (!hasSpeechRecognition) {
-      // Offline fallback mock phrases depending on selected language
-      const sampleNotesByLang = {
-        "hi-IN": [
-          "35 साल का पुरुष, बाइक एक्सीडेंट, सिर में गहरी चोट, काफी खून बह रहा है और मरीज अचेत है।",
-          "छाती पर तेज आघात, सांस लेने में अत्यधिक कठिनाई, पल्स कमजोर है।",
-          "सड़क दुर्घटना, दाहिने पैर में फ्रैक्चर, बीपी 85/50 तक गिर रहा है।",
-        ],
-        "mr-IN": [
-          "३५ वर्षांचा पुरुष, बाईक अपघात, डोक्याला गंभीर दुखापत, प्रचंड रक्तस्राव आणि बेशुद्ध अवस्था.",
-          "छातीवर जबर मार, श्वास घेण्यास अडचण, नाडी मंदावली आहे.",
-          "अपघातग्रस्त रुग्ण, उजव्या पायाचे हाड मोडले, रक्तदाब कमी होत आहे.",
-        ],
-        "en-IN": [
-          "35-year-old male, high-speed motorcycle crash, severe temporal head trauma and active hemorrhage.",
-          "Blunt chest trauma with flail segment, tachypneic and hypotensive en-route.",
-          "Compound lower extremity crush injury, tourniquet placed, BP dropping.",
-        ],
-      };
-      const samples = sampleNotesByLang[lang];
-      const randomNote = samples[Math.floor(Math.random() * samples.length)];
-      onChange(value ? `${value} ${randomNote}` : randomNote);
+      // Offline fallback: Insert structured clinical English note
+      const fallback =
+        "35-year-old male, high-speed motorcycle crash, severe temporal head trauma and active hemorrhage.";
+      onChange(value ? `${value} ${fallback}` : fallback);
       return;
     }
 
     try {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {}
+      }
+
       const SpeechRecognition =
         (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = lang;
 
-      if (!isRecording) {
+      recognition.continuous = true; // DO NOT stop automatically on pauses
+      recognition.interimResults = true;
+      recognition.lang = langRef.current;
+      recognitionRef.current = recognition;
+
+      recognition.onstart = () => {
         setIsRecording(true);
-        recognition.start();
+      };
 
-        recognition.onresult = (event: any) => {
-          const transcript = event.results[0][0].transcript;
-          onChange(value ? `${value} ${transcript}` : transcript);
+      recognition.onresult = (event: any) => {
+        let finalChunk = "";
+        let interimChunk = "";
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const item = event.results[i];
+          const transcript = item[0].transcript;
+          if (item.isFinal) {
+            finalChunk += transcript + " ";
+          } else {
+            interimChunk += transcript;
+          }
+        }
+
+        if (finalChunk.trim()) {
+          // Immediately translate regional words/phrases into clean clinical English
+          const englishChunk = translateRegionalToEnglish(finalChunk.trim());
+          onChange(value ? `${value.trim()} ${englishChunk}` : englishChunk);
+        }
+
+        setInterimTranscript(interimChunk);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.debug("VoiceNotesRecorder speech error:", event.error);
+        // Do not stop on silence pauses (no-speech)
+        if (event.error === "no-speech" || event.error === "audio-capture") {
+          return;
+        }
+        if (event.error === "not-allowed") {
+          alert("Microphone permission denied. Please allow microphone access in browser settings.");
+          stopRecording();
+        }
+      };
+
+      recognition.onend = () => {
+        // Continuous keep-alive: stay open until user clicks stop
+        if (isRecordingRef.current) {
+          try {
+            recognition.start();
+          } catch (e) {
+            setTimeout(() => {
+              if (isRecordingRef.current) {
+                try {
+                  recognition.start();
+                } catch (err) {}
+              }
+            }, 250);
+          }
+        } else {
           setIsRecording(false);
-        };
+          setInterimTranscript("");
+        }
+      };
 
-        recognition.onerror = () => setIsRecording(false);
-        recognition.onend = () => setIsRecording(false);
-      } else {
-        recognition.stop();
-        setIsRecording(false);
-      }
+      isRecordingRef.current = true;
+      setIsRecording(true);
+      setRecordingSeconds(0);
+      setInterimTranscript("");
+
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setRecordingSeconds((prev) => prev + 1);
+      }, 1000);
+
+      recognition.start();
     } catch {
-      setIsRecording(false);
+      stopRecording();
+    }
+  };
+
+  const toggleRecording = () => {
+    if (isRecordingRef.current) {
+      stopRecording();
+    } else {
+      startRecording();
     }
   };
 
   const quickPhrasesByLang = {
     "hi-IN": [
-      "सिर में गहरी चोट (Head Trauma)",
-      "काफी खून बह रहा है (Hemorrhage)",
-      "मरीज बेहोश है (Unconscious)",
-      "सांस लेने में तकलीफ (Dyspnea)",
-      "बाइक एक्सीडेंट (Bike Crash)",
+      "35yo Male (Bike Crash)",
+      "Severe Head Trauma",
+      "Active Hemorrhage",
+      "Unresponsive / GCS < 8",
+      "Acute Dyspnea",
     ],
     "mr-IN": [
-      "डोक्याला गंभीर दुखापत (Head Injury)",
-      "प्रचंड रक्तस्राव (Bleeding)",
-      "बेशुद्ध रुग्ण (Unconscious)",
-      "हाडाचे फ्रॅक्चर (Fracture)",
-      "गाडीचा अपघात (Road Accident)",
+      "42yo Male (Highway Accident)",
+      "Blunt Head Injury",
+      "Profuse Bleeding",
+      "Unconscious",
+      "Compound Bone Fracture",
     ],
     "en-IN": [
       "Severe Head Trauma",
       "Active Hemorrhage",
       "Unresponsive / GCS < 8",
       "Compound Fracture",
-      "Bike Accident",
+      "Motorcycle Accident",
     ],
   };
 
@@ -120,7 +243,7 @@ export default function VoiceNotesRecorder({
         <div className="flex items-center gap-2">
           <Languages className="w-4 h-4 text-emerald-400" />
           <span className="text-xs font-semibold text-slate-300">
-            Voice & Notes Language:
+            Dictation Language:
           </span>
           <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
             <button
@@ -132,7 +255,7 @@ export default function VoiceNotesRecorder({
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              Hinglish / EN
+              English / Hinglish
             </button>
             <button
               type="button"
@@ -143,7 +266,7 @@ export default function VoiceNotesRecorder({
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              हिंदी (Hindi)
+              हिंदी (Auto-Translate)
             </button>
             <button
               type="button"
@@ -154,7 +277,7 @@ export default function VoiceNotesRecorder({
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              मराठी (Marathi)
+              मराठी (Auto-Translate)
             </button>
           </div>
         </div>
@@ -162,41 +285,82 @@ export default function VoiceNotesRecorder({
         <button
           type="button"
           onClick={toggleRecording}
-          className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm ${
+          className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-sm ${
             isRecording
-              ? "bg-red-600 text-white animate-pulse"
+              ? "bg-red-600 text-white ring-2 ring-red-400"
               : "bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700"
           }`}
         >
           {isRecording ? (
-            <MicOff className="w-3.5 h-3.5" />
+            <>
+              <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+              <span>Stop Recording ({formatTime(recordingSeconds)})</span>
+            </>
           ) : (
-            <Mic className="w-3.5 h-3.5 text-red-400" />
+            <>
+              <Mic className="w-3.5 h-3.5 text-red-400" />
+              <span>Continuous Dictation</span>
+            </>
           )}
-          <span>{isRecording ? "Recording Audio..." : "Dictate Audio"}</span>
         </button>
       </div>
 
-      {/* Input Area */}
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={
-          lang === "hi-IN"
-            ? "यहाँ हिंदी में लिखें या बोलें: उदा. '35 साल का पुरुष, बाइक एक्सीडेंट, सिर में गहरी चोट'..."
-            : lang === "mr-IN"
-            ? "येथे मराठीत लिहा किंवा बोला: उदा. '३५ वर्षांचा पुरुष, बाईक अपघात, डोक्याला गंभीर दुखापत'..."
-            : "Type or dictate clinical notes in Hinglish, Hindi, Marathi, or English (e.g. '35-year-old male, bike accident, severe head injury')..."
-        }
-        rows={3}
-        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-red-500 transition-colors font-sans"
-      />
+      {/* Active Recording Notice */}
+      {isRecording && (
+        <div className="bg-red-950/70 border border-red-700/80 rounded-xl p-2.5 flex items-center justify-between text-xs text-red-200">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+            <span className="font-semibold">Microphone Listening ({formatTime(recordingSeconds)})</span>
+            <span className="text-slate-400 hidden sm:inline">— Dictate continuously. Notes transcribe directly in English.</span>
+          </div>
+          <button
+            type="button"
+            onClick={stopRecording}
+            className="px-2 py-0.5 bg-red-600 hover:bg-red-500 text-white rounded text-[11px] font-bold"
+          >
+            Done
+          </button>
+        </div>
+      )}
 
-      {/* Local Language Quick Phrase Pills */}
+      {/* Interim Hearing Indicator */}
+      {interimTranscript && (
+        <div className="text-xs text-amber-300 italic bg-amber-950/40 border border-amber-800/60 rounded-xl px-3 py-1.5 flex items-center gap-2">
+          <Volume2 className="w-3.5 h-3.5 text-amber-400 shrink-0 not-italic" />
+          <span className="font-semibold text-amber-200 not-italic">Hearing:</span>
+          <span>&ldquo;{interimTranscript}&rdquo;</span>
+        </div>
+      )}
+
+      {/* Input Area */}
+      <div className="relative">
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Clinical emergency notes appear here in English as you speak (continuous recording until you stop)..."
+          rows={3}
+          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 pb-8 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors font-sans"
+        />
+        {value && (
+          <div className="absolute bottom-2 right-2">
+            <button
+              type="button"
+              onClick={() => polishNotesToEnglish()}
+              disabled={isTranslating}
+              className="px-2 py-0.5 bg-blue-900/50 hover:bg-blue-800/80 border border-blue-700/60 text-blue-200 rounded-md text-[10px] font-semibold flex items-center gap-1 transition-colors"
+            >
+              <Sparkles className="w-3 h-3 text-blue-400" />
+              <span>{isTranslating ? "Translating..." : "Polish to English"}</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Quick Incident Tags */}
       <div className="space-y-1.5">
         <div className="flex items-center gap-1 text-[11px] text-slate-400">
           <Sparkles className="w-3 h-3 text-amber-400" />
-          <span>Quick Local Language Incident Tags:</span>
+          <span>Quick Clinical Tags:</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {quickPhrasesByLang[lang].map((phrase) => (
